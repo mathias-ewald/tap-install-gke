@@ -1,0 +1,42 @@
+#@data/values
+---
+
+#@overlay/match missing_ok=True
+tanzunet:
+
+container_registry:
+  hostname: "gcr.io"
+  project: "cso-pcfs-emea-mewald"
+  repository:
+    build_service: build-service
+  #@overlay/match missing_ok=True
+  username:
+  #@overlay/match missing_ok=True
+  password:
+    
+domain: tap.halusky.net
+
+cloudDNS:
+  project: cso-pcfs-emea-mewald
+  #@overlay/match missing_ok=True
+  key:
+
+letsencrypt:
+  email: mathias.ewald@googlemail.com
+  issuer: letsencrypt-dns
+
+github:
+  #@overlay/match missing_ok=True
+  clientId: 
+  #@overlay/match missing_ok=True
+  clientSecret: 
+
+database:
+  #@overlay/match missing_ok=True
+  host:
+  #@overlay/match missing_ok=True
+  database:
+  #@overlay/match missing_ok=True
+  username:
+  #@overlay/match missing_ok=True
+  password:

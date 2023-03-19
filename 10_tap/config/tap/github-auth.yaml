@@ -1,0 +1,26 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.all, missing_ok=True
+---
+tap_gui:
+  #@overlay/match missing_ok=True
+  app_config:
+    #@overlay/match missing_ok=True
+    auth:
+      allowGuestAccess: false
+      #@overlay/match missing_ok=True
+      environment: development
+      #@overlay/match missing_ok=True
+      providers:
+        #@overlay/match missing_ok=True
+        github:
+          #@overlay/match missing_ok=True
+          development:
+            clientId: #@ data.values.github.clientId
+            clientSecret: #@ data.values.github.clientSecret
+      #@overlay/match missing_ok=True
+      loginPage:
+        github:
+          title: Github Login
+          message: Enter with your GitHub account

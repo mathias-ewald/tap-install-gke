@@ -1,0 +1,22 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLInstance
+metadata:
+  name: #@ data.values.name
+  namespace: service-instances
+spec:
+  databaseVersion: #@ data.values.type
+  region: #@ data.values.region
+  rootPassword:
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: #@ data.values.secret_name
+  settings:
+    tier: #@ data.values.tier
+    ipConfiguration:
+      authorizedNetworks:
+      - name: public-internet
+        value: 0.0.0.0/0
+      ipv4Enabled: true

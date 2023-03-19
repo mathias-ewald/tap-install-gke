@@ -1,0 +1,164 @@
+#@ load("@ytt:data", "data")
+---
+profile: #@ data.values.profile
+
+shared:
+  ingress_domain: #@ data.values.domain
+  kubernetes_distribution: ""
+  kubernetes_version: ""
+
+ceip_policy_disclosed: true
+
+buildservice:
+  kp_default_repository: #@ "{}/{}/{}".format(data.values.container_registry.hostname, data.values.container_registry.project, data.values.container_registry.repository.build_service)
+  kp_default_repository_username: #@ data.values.container_registry.username
+  kp_default_repository_password: #@ data.values.container_registry.password
+  tanzunet_username: #@ data.values.tanzunet.username
+  tanzunet_password: #@ "{}".format(data.values.tanzunet.password)
+  exclude_dependencies: true
+
+cnrs:
+  domain_name: #@ "cnrs.{}".format(data.values.domain)
+  domain_template: "{{.Name}}-{{.Namespace}}.{{.Domain}}"
+  ingress_issuer: ""
+  default_tls_secret: "tanzu-system-ingress/tap-cert"
+
+scanning:
+  metadataStore:
+    url: ""
+
+supply_chain: testing_scanning
+
+ootb_supply_chain_basic:
+  registry:
+    server: #@ data.values.container_registry.hostname
+    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
+  gitops:
+    ssh_secret: ""
+
+ootb_supply_chain_testing:
+  registry:
+    server: #@ data.values.container_registry.hostname
+    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
+  gitops:
+    ssh_secret: ""
+  cluster_builder: default
+  service_account: default
+
+ootb_supply_chain_testing_scanning:
+  registry:
+    server: #@ data.values.container_registry.hostname
+    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
+  gitops:
+    ssh_secret: ""
+  cluster_builder: default
+  service_account: default
+
+learningcenter:
+  ingressDomain: #@ "tlc.{}".format(data.values.domain)
+  ingressSecret:
+    secretName: learningcenter-cert
+
+tap_gui:
+  service_type: ClusterIP
+  ingressEnabled: "true"
+  ingressDomain: #@ data.values.domain
+  tls:
+    secretName: tap-cert
+    namespace: tanzu-system-ingress
+  app_config:
+    app:
+      baseUrl: #@ "https://tap-gui.{}".format(data.values.domain)
+    backend:
+      baseUrl: #@ "https://tap-gui.{}".format(data.values.domain)
+      cors:
+        origin: #@ "https://tap-gui.{}".format(data.values.domain)
+      database:
+        client: pg
+        pluginDivisionMode: schema
+        connection:
+          host: #@ data.values.database.host
+          port: 5432
+          user: #@ data.values.database.username
+          password: #@ data.values.database.password
+          database: #@ data.values.database.database
+          ssl:
+            rejectUnauthorized: false
+    auth:
+      allowGuestAccess: true
+    kubernetes: 
+      serviceLocatorMethod:
+        type: multiTenant
+      clusterLocatorMethods:
+      - type: config
+        clusters:
+        - url: #@ data.values.build_cluster_url
+          name: build-cluster
+          authProvider: serviceAccount
+          serviceAccountToken: #@ data.values.build_cluster_token
+          skipTLSVerify: true
+          skipMetricsLookup: true
+        - url: #@ data.values.run_cluster_url
+          name: run-cluster
+          authProvider: serviceAccount
+          serviceAccountToken: #@ data.values.run_cluster_token
+          skipTLSVerify: true
+          skipMetricsLookup: true
+    proxy:
+      /metadata-store:
+        target: https://metadata-store-app.metadata-store:8443/api/v1
+        changeOrigin: true
+        secure: false
+        headers:
+          Authorization: #@ "Bearer {}".format(data.values.metadata_store_token)
+          X-Custom-Source: project-star
+
+metadata_store:
+  ingress_enabled: true
+  tls:
+    secretName: tap-cert
+    namespace: tanzu-system-ingress
+
+grype:
+  namespace: "default"
+  targetImagePullSecret: "tap-registry"
+  metadataStore:
+    url: #@ "https://metadata-store.{}".format(data.values.domain)
+    caSecret:
+      name: store-ca-cert
+      importFromNamespace: metadata-store-secrets
+    authSecret:
+      name: store-auth-token
+      importFromNamespace: metadata-store-secrets
+
+contour:
+  envoy:
+    service:
+      type: LoadBalancer
+
+accelerator:
+  domain: #@ data.values.domain
+  ingress:
+    include: true
+    enable_tls: true
+  tls:
+    secret_name: tap-cert
+    namespace: tanzu-system-ingress
+  server:
+    service_type: ClusterIP
+
+image_policy_webhook:
+  allow_unmatched_tags: true
+
+appliveview:
+  ingressEnabled: true
+  tls:
+    secretName: tap-cert
+    namespace: tanzu-system-ingress
+  
+appliveview_connector:
+  backend:
+    sslDeactivated: false
+    ingressEnabled: true
+    host: #@ "appliveview.{}".format(data.values.domain)
+    port: "443"

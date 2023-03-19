@@ -1,0 +1,16 @@
+
+#@ load("@ytt:data", "data")
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLUser
+metadata:
+  name: #@ data.values.name
+  namespace: service-instances
+spec:
+  instanceRef:
+    name: #@ data.values.instance_name
+  password:
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: #@ data.values.secret_name

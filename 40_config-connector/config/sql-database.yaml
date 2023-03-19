@@ -1,0 +1,12 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLDatabase
+metadata:
+  name: #@ data.values.name
+  namespace: service-instances
+spec:
+  charset: UTF8
+  collation: en_US.UTF8
+  instanceRef:
+    name: #@ data.values.instance_name

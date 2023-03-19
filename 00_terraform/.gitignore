@@ -1,0 +1,4 @@
+terraform/backend.config
+terraform/.terraform
+terraform/.terraform.lock.hcl
+tap-*-terraform.json

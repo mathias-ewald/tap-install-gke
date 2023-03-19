@@ -1,0 +1,14 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClusterInstanceClass
+metadata:
+ name: #@ data.values.name
+spec:
+  description:
+    short: #@ data.values.description
+  pool:
+    kind: Secret
+    labelSelector:
+      matchLabels:
+        services.apps.tanzu.vmware.com/class: #@ data.values.service_class

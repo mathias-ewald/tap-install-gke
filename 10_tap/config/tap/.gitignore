@@ -1,0 +1,5 @@
+secrets.yaml
+values.yaml
+values-*.yaml
+!values-template.yaml
+

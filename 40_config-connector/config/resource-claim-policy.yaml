@@ -1,0 +1,15 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ResourceClaimPolicy
+metadata:
+  name: #@ data.values.name
+  namespace: service-instances
+spec:
+  subject:
+    kind: Secret
+    group: ""
+    selector:
+      matchLabels:
+        services.apps.tanzu.vmware.com/class: #@ data.values.service_class
+  consumingNamespaces: [ "*" ]
