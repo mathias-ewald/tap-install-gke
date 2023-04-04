@@ -9,10 +9,16 @@ container_registry:
   project: "cso-pcfs-emea-mewald"
   repository:
     build_service: build-service
+    image_ops: image-ops
   #@overlay/match missing_ok=True
   username:
   #@overlay/match missing_ok=True
   password:
+
+gitops:
+  server: github.com
+  owner: mathias-ewald
+  repo: tap-demo-imageops
     
 domain: tap.halusky.net
 

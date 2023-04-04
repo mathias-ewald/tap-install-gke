@@ -29,28 +29,18 @@ scanning:
 
 supply_chain: testing_scanning
 
-ootb_supply_chain_basic:
-  registry:
-    server: #@ data.values.container_registry.hostname
-    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
-  gitops:
-    ssh_secret: ""
-
-ootb_supply_chain_testing:
-  registry:
-    server: #@ data.values.container_registry.hostname
-    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
-  gitops:
-    ssh_secret: ""
-  cluster_builder: default
-  service_account: default
-
 ootb_supply_chain_testing_scanning:
+  #@ if data.values.profile == "iterate":
   registry:
     server: #@ data.values.container_registry.hostname
-    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.build_service)
+    repository: #@ "{}/{}".format(data.values.container_registry.project, data.values.container_registry.repository.image_ops)
+  #@ else:
   gitops:
     ssh_secret: ""
+    server_address: #@ data.values.gitops.server
+    repository_owner: #@ data.values.gitops.owner
+    repository_name: #@ data.values.gitops.repo
+  #@ end
   cluster_builder: default
   service_account: default
 
