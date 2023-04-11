@@ -33,3 +33,5 @@ function decoded_k8s_secret_key() {
   KEY=$3
   kubectl -n $NAMESPACE get secret $NAME -o jsonpath="{ .data.$KEY }" | base64 -d
 }
+
+

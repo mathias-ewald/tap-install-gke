@@ -7,8 +7,47 @@ function switch_cluster() {
 }
 
 function setup_dev_service_account() {
-  NAMESPACE=$1
-  kubectl -n $NAMESPACE apply -f $CONFIG_DIR/dev-user-rbac.yaml
+  ROLES=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      -n|--namepsace)
+        NAMESPACE="$2"
+        shift 2
+        ;;
+      -N|--name)
+        NAME="$2"
+        shift 2
+        ;;
+      -r|--role)
+        ROLES="${ROLES} $2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+  done
+
+  ytt -f $CONFIG_DIR/sa.yaml \
+    -v name=$NAME \
+    -v namespace=$NAMESPACE \
+    | kubectl apply -f -
+
+  ytt -f $CONFIG_DIR/sa-token.yaml \
+    -v sa=$NAME \
+    -v namespace=$NAMESPACE \
+    | kubectl apply -f -
+
+  for ROLE in $ROLES; do
+    ytt -f $CONFIG_DIR/rolebinding-sa.yaml \
+      -v name=$NAME-has-$ROLE \
+      -v namespace=$NAMESPACE \
+      -v role=$ROLE \
+      -v sa=$NAME \
+      | kubectl apply -f -
+  done
+  
 }
 
 function generate_kubeconfig() {
