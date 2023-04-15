@@ -9,3 +9,4 @@ kubectl -n $NAMESPACE delete deliverable petclinic
 
 switch_cluster build
 kubectl -n $NAMESPACE delete workload petclinic
+kubectl -n $NAMESPACE apply -f $COMMON_DIR/scanpolicy-strict.yaml
