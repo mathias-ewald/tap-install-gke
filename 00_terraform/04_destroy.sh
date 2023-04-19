@@ -1,10 +1,12 @@
 #!/bin/bash
-set -uxo pipefail
+set -euxo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source $SCRIPT_DIR/common.sh
-
-terraform destroy -var-file="variables.tfvars" 
+ 
+pushd terraform
+  terraform destroy -var-file="variables.tfvars" 
+popd
 
 BUCKET_NAME="gs://tap-$ENVIRONMENT-tfstate"
 gsutil rm -r $BUCKET_NAME
