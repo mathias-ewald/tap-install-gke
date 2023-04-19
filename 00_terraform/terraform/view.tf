@@ -26,7 +26,7 @@ module "gke_view" {
   node_pools = [
     {
       name                   = "default-node-pool"
-      machine_type           = "e2-standard-2"
+      machine_type           = "e2-standard-8"
       node_locations         = join(",", var.zones)
       min_count              = 1
       max_count              = 1
